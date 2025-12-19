@@ -39,7 +39,7 @@ export default function HomePage() {
   const statsRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll();
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
 
   useEffect(() => {
@@ -54,9 +54,9 @@ export default function HomePage() {
     // GSAP Marquee Animation
     if (marqueeRef.current) {
       gsap.to(marqueeRef.current, {
-        xPercent: -50,
+        xPercent: -500,
         ease: 'none',
-        duration: 30,
+        duration: 15,
         repeat: -1,
       });
     }
@@ -113,22 +113,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Floating Navigation Indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.8 }}
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="flex flex-col items-center gap-2 text-muted-foreground"
-        >
-          <span className="text-xs tracking-widest uppercase">Scroll</span>
-          <ChevronDown className="w-4 h-4" />
-        </motion.div>
-      </motion.div>
+      
 
       {/* Hero Section */}
       <motion.section
@@ -136,32 +121,6 @@ export default function HomePage() {
         style={{ opacity: heroOpacity, scale: heroScale }}
         className="relative min-h-screen flex flex-col justify-between px-6 md:px-12 lg:px-20 py-8"
       >
-        {/* Top Bar */}
-        <div className="flex justify-between items-start">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
-            className="flex flex-col"
-          >
-            <span className="text-xs tracking-[0.3em] text-muted-foreground uppercase">
-              by trimids
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mt-1">
-              Y<span className="text-chart-2">AM</span>U
-            </h1>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
-            className="flex items-center gap-2 text-sm text-muted-foreground"
-          >
-            <Leaf className="w-4 h-4 text-chart-2" />
-            <span>Eco-First Travel</span>
-          </motion.div>
-        </div>
 
         {/* Main Hero Content */}
         <div className="flex-1 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-20 py-12">
@@ -192,24 +151,41 @@ export default function HomePage() {
             </motion.p>
           </div>
 
+          {/* Top Bar */}
+          <div className="md:hidden flex justify-between items-start">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className="flex flex-col"
+            >
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mt-1">
+                Y<span className="text-chart-2">AM</span>U
+              </h1>
+
+              <span className="text-xs tracking-[0.3em] text-muted-foreground uppercase">
+                by <span className="text-red-500">TRI</span><span className="text-blue-500">MIDS</span>
+              </span>
+            </motion.div>
+          </div>
           {/* Right - Search Card */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, rotateY: -10 }}
-            animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+            initial={{ opacity: 1, scale: 1, rotateY: 0 }}
+            whileInView={{ opacity: 1, scale: 1, rotateY: 0 }}
             transition={{ duration: 1.2, delay: 0.5 }}
             className="w-full max-w-md"
           >
             <div className="relative">
               {/* Decorative Elements */}
               <div className="absolute -top-8 -right-8 w-24 h-24 border border-border rounded-full opacity-20" />
-              <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-chart-2/10 rounded-full" />
+              <div className="absolute -bottom-6 -left-6 w-16 h-16 bg-chart-2/50 rounded-full" />
 
               {/* Search Card */}
-              <div className="relative bg-card border border-border rounded-sm p-8 shadow-2xl">
-                <div className="flex items-center gap-3 mb-8">
+              <div className="relative bg-transparent backdrop-blur-sm border border-border rounded-sm p-8 shadow-2xl">
+                <div className="flex items-center justify-center gap-3 mb-8">
                   <div>
-                    <p className="text-5xl text-muted-foreground">Book Your</p>
-                    <p className="font-semibold text-5xl">Journey</p>
+                    <p className="text-5xl text-text">Book Your</p>
+                    <p className="text-5xl">Journey</p>
                   </div>
                 </div>
 
@@ -288,30 +264,10 @@ export default function HomePage() {
           </motion.div>
         </div>
 
-        {/* Bottom Stats Preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.8 }}
-          className="grid grid-cols-3 gap-8 max-w-2xl"
-        >
-          {[
-            { value: '50K+', label: 'Happy Travelers' },
-            { value: '200+', label: 'Routes' },
-            { value: '99%', label: 'On-Time' },
-          ].map((stat, i) => (
-            <div key={i} className="text-left">
-              <p className="text-2xl md:text-3xl font-bold">{stat.value}</p>
-              <p className="text-xs text-muted-foreground tracking-wide uppercase mt-1">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </motion.div>
       </motion.section>
 
       {/* Marquee Section */}
-      <section className="py-12 border-y border-border overflow-hidden bg-muted/30">
+      <section className="py-4 border-y border-border overflow-hidden bg-muted/30">
         <div ref={marqueeRef} className="flex gap-12 whitespace-nowrap">
           {[...cities, ...cities].map((city, i) => (
             <span
@@ -542,8 +498,8 @@ export default function HomePage() {
                       scale: i === activeFeature ? 1 : 0.98,
                     }}
                     className={`p-8 rounded-sm border transition-all duration-300 ${i === activeFeature
-                        ? 'bg-card border-primary/50'
-                        : 'bg-transparent border-border'
+                      ? 'bg-card border-primary/50'
+                      : 'bg-transparent border-border'
                       }`}
                     onMouseEnter={() => setActiveFeature(i)}
                   >
@@ -613,14 +569,6 @@ export default function HomePage() {
 
         {/* Content */}
         <div className="relative z-10 text-center max-w-4xl" data-aos="fade-up">
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            className="w-20 h-20 mx-auto mb-8 bg-primary/10 rounded-full flex items-center justify-center"
-          >
-            <Bus className="w-10 h-10 text-primary" />
-          </motion.div>
 
           <h3 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight mb-6">
             Ready to
@@ -644,13 +592,6 @@ export default function HomePage() {
           <p className="mt-8 text-sm text-muted-foreground">
             No registration required • Instant booking
           </p>
-        </div>
-
-        {/* Bottom Decoration */}
-        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center gap-4 text-sm text-muted-foreground">
-          <span>© 2025 Y<span className="text-chart-2">AM</span>U by trimids</span>
-          <span className="w-1 h-1 rounded-full bg-muted-foreground" />
-          <span>Sri Lanka</span>
         </div>
       </section>
     </div>

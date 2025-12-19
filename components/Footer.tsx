@@ -51,8 +51,10 @@ export function Footer() {
 
           {/* Developer Info */}
           <div>
-            <div className="space-y-4">
-              {/* Logo */}
+            <div className="space-y-4 items-center justify-between">
+              
+              <div className="flex flex-col items-center justify-between gap-4">
+                {/* Logo */}
               <div className="w-32 h-auto">
                 <Image
                   src="/logo.png"
@@ -63,11 +65,10 @@ export function Footer() {
                   priority
                 />
               </div>
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground text-center md:text-left">
                   Developed by <span className="text-primary font-medium">Trimids</span>
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground font-medium">
                   A team of passionate developers building the future of travel in Sri Lanka.
                 </p>
               </div>
@@ -82,8 +83,8 @@ export function Footer() {
           <p className="text-xs text-muted-foreground text-center md:text-left">
             &copy; {currentYear} YAMU. All rights reserved.
           </p>
-          <p className="text-xs text-muted-foreground font-medium">
-            Travel Smarter. Travel Greener.
+          <p className="text-md text-muted-foreground font-medium">
+            Let's Go
           </p>
         </div>
       </div>

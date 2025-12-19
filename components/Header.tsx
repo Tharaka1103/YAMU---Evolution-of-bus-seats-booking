@@ -28,7 +28,7 @@ export function Header() {
           <div className="flex items-center gap-3">
             <div>
               <p className="text-xl font-bold tracking-tight">Y<span className="text-chart-2">AM</span>U</p>
-              <p className="text-xs text-muted-foreground">by <span className="text-red-500">TRI</span><span className="text-blue-500">MIDS</span></p>
+              <p className="text-xs text-muted-foreground">Let's Go</p>
             </div>
           </div>
 
