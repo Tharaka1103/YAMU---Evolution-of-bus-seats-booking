@@ -23,6 +23,7 @@ import {
   CreditCard,
   Timer
 } from 'lucide-react';
+import Link from 'next/link';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -249,6 +250,7 @@ export default function HomePage() {
                   </div>
 
                   {/* Search Button */}
+                  <Link href={"/booking"}>
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
@@ -258,6 +260,7 @@ export default function HomePage() {
                     <span>Find Buses</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -361,7 +364,7 @@ export default function HomePage() {
                   </span>
 
                   {/* Card */}
-                  <div className="relative bg-card border border-border rounded-sm p-8 hover:border-primary/50 transition-colors">
+                  <div className="relative bg-card backdrop-blur-sm border border-border rounded-sm p-8 hover:border-primary/50 transition-colors">
                     <div className="w-12 h-12 bg-muted rounded-sm flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
                       <item.icon className="w-6 h-6 text-foreground group-hover:text-primary transition-colors" />
                     </div>

@@ -35,7 +35,7 @@ export function ThemeSwitcherFixed() {
             title={t.name}
           >
             <div
-              className={`p-3 rounded-lg border-2 transition-all duration-300 ${
+              className={`p-3 rounded-lg transition-all duration-300 ${
                 isActive
                   ? "border-primary bg-primary/10"
                   : "border-border bg-transparent hover:border-primary hover:bg-primary/5"
