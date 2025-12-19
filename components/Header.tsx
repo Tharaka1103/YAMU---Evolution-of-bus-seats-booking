@@ -8,6 +8,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { MobileThemeSwitcher } from "@/components/MobileThemeSwitcher";
 import { useState } from "react";
 
 export function Header() {
@@ -21,9 +22,11 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
-        <div className="flex items-center justify-between h-20">
+    <>
+      <MobileThemeSwitcher />
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-border">
+        <div className="max-w-7xl mx-auto px-6 md:px-12 lg:px-24">
+          <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center gap-3">
             <div>
@@ -95,5 +98,6 @@ export function Header() {
         </div>
       </div>
     </header>
+    </>
   );
 }
