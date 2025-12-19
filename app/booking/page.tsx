@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -40,6 +41,13 @@ import {
   Printer
 } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
+
+// Dynamic import of Leaflet map to avoid SSR issues
+const MapComponent = dynamic(() => import('@/components/RouteMap'), { 
+  ssr: false,
+  loading: () => <div className="w-full h-80 bg-muted rounded-xl flex items-center justify-center">Loading map...</div>
+});
 
 // Types
 interface Seat {
@@ -240,7 +248,18 @@ export default function BookingPage() {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
-    })
+    }),
+    // Route coordinates (Colombo to Kandy)
+    fromCoords: { lat: 6.9271, lng: 80.7789 },
+    toCoords: { lat: 7.2906, lng: 80.6337 },
+    // Approximate route waypoints
+    routeWaypoints: [
+      { lat: 6.9271, lng: 80.7789 },
+      { lat: 6.95, lng: 80.75 },
+      { lat: 7.05, lng: 80.72 },
+      { lat: 7.15, lng: 80.69 },
+      { lat: 7.2906, lng: 80.6337 }
+    ]
   });
 
   // Generate seat layout when bus is selected
@@ -534,7 +553,7 @@ export default function BookingPage() {
             >
               <div className="flex flex-col lg:flex-row gap-8">
                 {/* Bus List */}
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold">Available Buses</h2>
@@ -574,7 +593,7 @@ export default function BookingPage() {
                         animate={{ opacity: 1, y: 0 }}
                         whileHover={{ scale: 1.01 }}
                         className={`bg-card border rounded-xl overflow-hidden transition-all cursor-pointer ${
-                          selectedBus?.id === bus.id ? 'border-primary ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
+                          selectedBus?.id === bus.id ? 'border-chart-2 ring-2 ring-primary/20' : 'border-border hover:border-primary/50'
                         }`}
                         onClick={() => setSelectedBus(bus)}
                       >
@@ -723,6 +742,15 @@ export default function BookingPage() {
                 {/* Sidebar - Eco Info */}
                 <div className="lg:w-80">
                   <div className="sticky top-32">
+                    <div className="bg-card border border-border rounded-xl overflow-hidden">
+                      <MapComponent 
+                        fromCoords={routeInfo.fromCoords}
+                        toCoords={routeInfo.toCoords}
+                        waypoints={routeInfo.routeWaypoints}
+                        from={routeInfo.from}
+                        to={routeInfo.to}
+                      />
+                    </div>
                     <div className="bg-chart-2/5 border border-chart-2/20 rounded-xl p-6">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="w-10 h-10 bg-chart-2/10 rounded-full flex items-center justify-center">
@@ -914,61 +942,97 @@ export default function BookingPage() {
                   </div>
                 </div>
 
-                {/* Booking Summary Sidebar */}
+                {/* Right Sidebar */}
                 <div className="lg:w-80">
-                  <div className="sticky top-32">
+                  <div className="sticky top-32 space-y-6">
+                    {/* Route Map */}
+                    <div className="bg-card border border-border rounded-xl overflow-hidden">
+                      <MapComponent 
+                        fromCoords={routeInfo.fromCoords}
+                        toCoords={routeInfo.toCoords}
+                        waypoints={routeInfo.routeWaypoints}
+                        from={routeInfo.from}
+                        to={routeInfo.to}
+                      />
+                    </div>
+
+                    {/* Booking Summary Sidebar */}
                     <div className="bg-card border border-border rounded-xl overflow-hidden">
                       <div className="p-6 border-b border-border">
-                        <h3 className="font-bold text-lg mb-4">Booking Summary</h3>
+                        <h3 className="font-bold text-lg mb-4">
+                          {selectedBus ? 'Selected Bus' : 'Bus Selection'}
+                        </h3>
                         
-                        {/* Route */}
-                        <div className="flex items-center gap-3 mb-4">
-                          <div className="flex flex-col items-center">
-                            <div className="w-3 h-3 rounded-full bg-chart-2" />
-                            <div className="w-0.5 h-8 bg-border" />
-                            <div className="w-3 h-3 rounded-full bg-primary" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="mb-2">
-                              <p className="font-medium">{routeInfo.from}</p>
-                              <p className="text-xs text-muted-foreground">{selectedBus.departureTime}</p>
-                            </div>
-                            <div>
-                              <p className="font-medium">{routeInfo.to}</p>
-                              <p className="text-xs text-muted-foreground">{selectedBus.arrivalTime}</p>
+                        {selectedBus && (
+                          <div className="mb-4 pb-4 border-b border-border">
+                            <p className="text-sm text-muted-foreground mb-1">Operator</p>
+                            <p className="font-semibold text-foreground">{selectedBus.operator}</p>
+                            <div className="mt-2 flex items-center gap-2">
+                              <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
+                                {selectedBus.type}
+                              </span>
+                              <span className="text-xs bg-chart-2/10 text-chart-2 px-2 py-1 rounded flex items-center gap-1">
+                                <Star className="w-3 h-3" />
+                                {selectedBus.rating} ({selectedBus.reviews})
+                              </span>
                             </div>
                           </div>
-                        </div>
-
-                        <div className="flex items-center justify-between text-sm text-muted-foreground">
-                          <span>{routeInfo.formattedDate}</span>
-                          <span>{selectedBus.duration}</span>
-                        </div>
-                      </div>
-
-                      {/* Selected Seats */}
-                      <div className="p-6 border-b border-border">
-                        <p className="text-sm text-muted-foreground mb-3">Selected Seats</p>
-                        {selectedSeats.length > 0 ? (
-                          <div className="flex flex-wrap gap-2">
-                            {selectedSeats.map((seat) => (
-                              <div
-                                key={seat.id}
-                                className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm font-medium flex items-center gap-1"
-                              >
-                                <Armchair className="w-3 h-3" />
-                                {seat.number}
-                                {seat.type === 'window' && <span className="text-xs">(W)</span>}
+                        )}
+                        
+                        {selectedBus && (
+                          <>
+                            {/* Route */}
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="flex flex-col items-center">
+                                <div className="w-3 h-3 rounded-full bg-chart-2" />
+                                <div className="w-0.5 h-8 bg-border" />
+                                <div className="w-3 h-3 rounded-full bg-primary" />
                               </div>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-sm text-muted-foreground italic">No seats selected</p>
+                              <div className="flex-1">
+                                <div className="mb-2">
+                                  <p className="font-medium">{routeInfo.from}</p>
+                                  <p className="text-xs text-muted-foreground">{selectedBus.departureTime}</p>
+                                </div>
+                                <div>
+                                  <p className="font-medium">{routeInfo.to}</p>
+                                  <p className="text-xs text-muted-foreground">{selectedBus.arrivalTime}</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between text-sm text-muted-foreground">
+                              <span>{routeInfo.formattedDate}</span>
+                              <span>{selectedBus.duration}</span>
+                            </div>
+                          </>
                         )}
                       </div>
 
-                      {/* Price Breakdown */}
-                      <div className="p-6">
+                      {selectedBus && (
+                        <>
+                          {/* Selected Seats */}
+                          <div className="p-6 border-b border-border">
+                            <p className="text-sm text-muted-foreground mb-3">Selected Seats</p>
+                            {selectedSeats.length > 0 ? (
+                              <div className="flex flex-wrap gap-2">
+                                {selectedSeats.map((seat) => (
+                                  <div
+                                    key={seat.id}
+                                    className="px-3 py-1 bg-primary/10 text-primary rounded-lg text-sm font-medium flex items-center gap-1"
+                                  >
+                                    <Armchair className="w-3 h-3" />
+                                    {seat.number}
+                                    {seat.type === 'window' && <span className="text-xs">(W)</span>}
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <p className="text-sm text-muted-foreground italic">No seats selected</p>
+                            )}
+                          </div>
+
+                          {/* Price Breakdown */}
+                          <div className="p-6">
                         <div className="space-y-2 mb-4">
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Base Fare × {selectedSeats.length}</span>
@@ -993,31 +1057,33 @@ export default function BookingPage() {
                             </span>
                           </div>
                         </div>
-                      </div>
+                          </div>
+                        </>
+                      )}
                     </div>
 
-                    {/* Navigation Buttons */}
-                    <div className="mt-4 flex gap-3">
-                      <button
-                        onClick={prevStep}
-                        className="flex-1 py-3 border border-border rounded-lg font-medium hover:bg-muted transition-colors"
-                      >
-                        Back
-                      </button>
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={nextStep}
-                        disabled={selectedSeats.length === 0}
-                        className="flex-1 py-3 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Continue
-                        <ArrowRight className="w-4 h-4" />
-                      </motion.button>
+                      {/* Navigation Buttons */}
+                      <div className="mt-4 flex gap-3">
+                        <button
+                          onClick={prevStep}
+                          className="flex-1 py-3 border border-border rounded-lg font-medium hover:bg-muted transition-colors"
+                        >
+                          Back
+                        </button>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={nextStep}
+                          disabled={selectedSeats.length === 0}
+                          className="flex-1 py-3 bg-primary text-primary-foreground rounded-lg font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Continue
+                          <ArrowRight className="w-4 h-4" />
+                        </motion.button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
             </motion.div>
           )}
 

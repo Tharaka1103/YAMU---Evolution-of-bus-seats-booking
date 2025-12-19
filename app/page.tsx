@@ -21,11 +21,42 @@ import {
   TreePine,
   Wifi,
   CreditCard,
-  Timer
+  Timer,
+  Star,
+  Wind,
+  Plug,
+  Tv,
+  Coffee
 } from 'lucide-react';
 import Link from 'next/link';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Route Interface
+interface BusRoute {
+  id: string;
+  from: string;
+  to: string;
+  distance: string;
+  duration: string;
+  buses: BusInfo[];
+}
+
+interface BusInfo {
+  id: number;
+  operator: string;
+  type: string;
+  departureTime: string;
+  arrivalTime: string;
+  duration: string;
+  price: number;
+  availableSeats: number;
+  totalSeats: number;
+  rating: number;
+  reviews: number;
+  amenities: string[];
+  busNumber: string;
+}
 
 export default function HomePage() {
   const [fromCity, setFromCity] = useState('');
@@ -33,6 +64,7 @@ export default function HomePage() {
   const [date, setDate] = useState('');
   const [activeFeature, setActiveFeature] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedRoute, setSelectedRoute] = useState<string | null>(null);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const marqueeRef = useRef<HTMLDivElement>(null);
